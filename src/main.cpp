@@ -6,13 +6,16 @@
 #include <Adafruit_I2CDevice.h>
 #include <SPI.h>
 
+#include <rus.h>
+#include <sounds.h>
+
 #define TFT_CS 5
 #define TFT_DC 2
 #define TFT_RST 4
 #define BACKLIGHT 7
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
-#define displayColor 0x780F
+#define displayColor ST7735_WHITE
 #define textColor ST7735_MAGENTA
 
 // #define startBtn 2
@@ -21,7 +24,7 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 #define tempPin 13
 // char sensorPrintout[4];
 
-// #define buzPin 12
+#define buzPin 33
 
 unsigned long timer;
 unsigned long del = 2000;
@@ -33,7 +36,7 @@ OneWire bus(busPin);
 DallasTemperature sensors(&bus);
 DeviceAddress sensor;
 
-String utf8rus(String source);
+// String utf8rus(String source);
 void tempRead();
 void updateDisplay();
 void displayInit();
@@ -52,13 +55,14 @@ void setup()
   {
     Serial.println("NO DS18B20 FOUND!");
   }
+
+  pinMode(buzPin, OUTPUT);
+  digitalWrite(buzPin, LOW);
 //   pinMode(BACKLIGHT, OUTPUT);
 //   digitalWrite(BACKLIGHT, HIGH);
 
 //   pinMode(startBtn, INPUT_PULLUP);
 
-
-  tft.cp437(true);
 
   displayInit();
 
@@ -76,12 +80,13 @@ void loop()
 
 void displayInit()
 {
+  tft.cp437(true);
   pinMode(BACKLIGHT, OUTPUT);
   digitalWrite(BACKLIGHT, HIGH);
   tft.initR(INITR_GREENTAB);
   tft.setRotation(2);
   tft.setTextWrap(false);
-  tft.fillScreen(0x780F);      //Очистить дисплей
+  tft.fillScreen(displayColor);      //Очистить дисплей
   tft.setCursor(0, 0);         //Поставить курсор Х У
   tft.setTextColor(textColor); //Цвет шрифта сиреневый
   tft.setTextSize(1);          //Размер шрифта "1"
@@ -144,55 +149,55 @@ void updateDisplay()
 // //   }
 // // }
 
-String utf8rus(String source)
-{
-  int i, k;
-  String target;
-  unsigned char n;
-  char m[2] = {'0', '\0'};
+// String utf8rus(String source)
+// {
+//   int i, k;
+//   String target;
+//   unsigned char n;
+//   char m[2] = {'0', '\0'};
 
-  k = source.length();
-  i = 0;
+//   k = source.length();
+//   i = 0;
 
-  while (i < k)
-  {
-    n = source[i];
-    i++;
+//   while (i < k)
+//   {
+//     n = source[i];
+//     i++;
 
-    if (n >= 0xC0)
-    {
-      switch (n)
-      {
-      case 0xD0:
-      {
-        n = source[i];
-        i++;
-        if (n == 0x81)
-        {
-          n = 0xA8;
-          break;
-        }
-        if (n >= 0x90 && n <= 0xBF)
-          n = n + 0x30;
-        break;
-      }
-      case 0xD1:
-      {
-        n = source[i];
-        i++;
-        if (n == 0x91)
-        {
-          n = 0xB8;
-          break;
-        }
-        if (n >= 0x80 && n <= 0x8F)
-          n = n + 0x70;
-        break;
-      }
-      }
-    }
-    m[0] = n;
-    target = target + String(m);
-  }
-  return target;
-}
+//     if (n >= 0xC0)
+//     {
+//       switch (n)
+//       {
+//       case 0xD0:
+//       {
+//         n = source[i];
+//         i++;
+//         if (n == 0x81)
+//         {
+//           n = 0xA8;
+//           break;
+//         }
+//         if (n >= 0x90 && n <= 0xBF)
+//           n = n + 0x30;
+//         break;
+//       }
+//       case 0xD1:
+//       {
+//         n = source[i];
+//         i++;
+//         if (n == 0x91)
+//         {
+//           n = 0xB8;
+//           break;
+//         }
+//         if (n >= 0x80 && n <= 0x8F)
+//           n = n + 0x70;
+//         break;
+//       }
+//       }
+//     }
+//     m[0] = n;
+//     target = target + String(m);
+//   }
+//   return target;
+// }

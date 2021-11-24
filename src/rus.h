@@ -1,3 +1,3 @@
-// #pragma once
+#pragma once
 
-// String utf8rus(String source);
+String utf8rus(String source);
