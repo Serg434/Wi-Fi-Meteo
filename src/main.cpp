@@ -18,13 +18,15 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 #define displayColor ST7735_WHITE
 #define textColor ST7735_MAGENTA
 
-// #define startBtn 2
-
 // bool btnFlag = false;
 #define tempPin 13
 // char sensorPrintout[4];
+#define startBtn 26
 
-#define buzPin 33
+#define buzBtn 27
+int buzPin = 33;
+volatile int btnClk = 0;
+volatile int songNum = 0;
 
 unsigned long timer;
 unsigned long del = 2000;
@@ -44,7 +46,9 @@ void displayInit();
 // void setFlag();
 // void wakeUp();
 // void startBtnClick();
-
+void playMusic();
+void stopMusic();
+void count();
 void setup()
 {
   // put your setup code here, to run once:
@@ -57,25 +61,46 @@ void setup()
   }
 
   pinMode(buzPin, OUTPUT);
-  digitalWrite(buzPin, LOW);
-//   pinMode(BACKLIGHT, OUTPUT);
-//   digitalWrite(BACKLIGHT, HIGH);
+  pinMode(buzBtn, INPUT_PULLUP);
+  pinMode(startBtn, INPUT_PULLUP);
 
-//   pinMode(startBtn, INPUT_PULLUP);
+  attachInterrupt(buzBtn, count, FALLING);
 
+  //   pinMode(BACKLIGHT, OUTPUT);
+  //   digitalWrite(BACKLIGHT, HIGH);
+
+  //   pinMode(startBtn, INPUT_PULLUP);
 
   displayInit();
-
+  // test();
+  // piratesSong();
 }
 
 void loop()
 {
-  // put your main code here, to run repeatedly:
+//   if(digitalRead(startBtn == HIGH)){
+//     Serial.println("startBtn Pressed");
+//     // piratesSong();
+//   }
+//     else{
+//       digitalWrite(buzPin, LOW);
+//     }
+  
+  // if (buttonState == LOW) {
+  // Serial.println("The button is being pressed");
+  //   piratesSong(); // turn on
+  // }
+  // else
+  // if (buttonState == HIGH) {
+  //   // Serial.println("The button is unpressed");
+  //   digitalWrite(buzPin, LOW);  // turn off
+  // }
 
-//   // startBtnClick();
+  //   // startBtnClick();
 
   tempRead();
   updateDisplay();
+  playMusic();
 }
 
 void displayInit()
@@ -86,16 +111,16 @@ void displayInit()
   tft.initR(INITR_GREENTAB);
   tft.setRotation(2);
   tft.setTextWrap(false);
-  tft.fillScreen(displayColor);      //Очистить дисплей
-  tft.setCursor(0, 0);         //Поставить курсор Х У
-  tft.setTextColor(textColor); //Цвет шрифта сиреневый
-  tft.setTextSize(1);          //Размер шрифта "1"
+  tft.fillScreen(displayColor); //Очистить дисплей
+  tft.setCursor(0, 0);          //Поставить курсор Х У
+  tft.setTextColor(textColor);  //Цвет шрифта сиреневый
+  tft.setTextSize(1);           //Размер шрифта "1"
   tft.println(utf8rus("Температура:"));
   tft.setTextSize(2);
   tft.setCursor(50, 20);
-  tft.print("\xB0" "C");
+  tft.print("\xB0"
+            "C");
 }
-
 
 void tempRead()
 {
@@ -118,6 +143,7 @@ void tempRead()
     Serial.print("oldTemp");
     Serial.print("-");
     Serial.println(oldTemp);
+
   }
 }
 
@@ -125,7 +151,6 @@ void updateDisplay()
 {
   if (newTemp != oldTemp)
   {
-    //  Serial.println(tempC);
     tft.setTextColor(textColor, displayColor);
     tft.setCursor(0, 20);
     tft.print(tempC, 1);
@@ -134,70 +159,28 @@ void updateDisplay()
   }
 }
 
-// // void startBtnClick()
-// // {
-// //   bool btnState = !digitalRead(2);
-// //   if (btnState && !flag)
-// //   { // обработчик нажатия
-// //     flag = true;
-// //     Serial.println("press");
-// //   }
-// //   if (!btnState && flag)
-// //   { // обработчик отпускания
-// //     flag = false;
-// //     Serial.println("release");
-// //   }
-// // }
+void playMusic()
+{
+  // int buttonState = digitalRead(buzBtn); // read new state
+  // volatile int songNum = 0;
+  int songCount = 2;
+  if(songNum = 0){
+    digitalWrite(buzPin,LOW);
+  }
+    else if(songNum = 1){
+piratesSong();
+  }
+  else if(songNum = 2){
+    marioMario();
+  }
+}
 
-// String utf8rus(String source)
-// {
-//   int i, k;
-//   String target;
-//   unsigned char n;
-//   char m[2] = {'0', '\0'};
+void stopMusic(){
+  digitalWrite(buzPin, LOW);
+  Serial.println("Stop Music");
+}
 
-//   k = source.length();
-//   i = 0;
-
-//   while (i < k)
-//   {
-//     n = source[i];
-//     i++;
-
-//     if (n >= 0xC0)
-//     {
-//       switch (n)
-//       {
-//       case 0xD0:
-//       {
-//         n = source[i];
-//         i++;
-//         if (n == 0x81)
-//         {
-//           n = 0xA8;
-//           break;
-//         }
-//         if (n >= 0x90 && n <= 0xBF)
-//           n = n + 0x30;
-//         break;
-//       }
-//       case 0xD1:
-//       {
-//         n = source[i];
-//         i++;
-//         if (n == 0x91)
-//         {
-//           n = 0xB8;
-//           break;
-//         }
-//         if (n >= 0x80 && n <= 0x8F)
-//           n = n + 0x70;
-//         break;
-//       }
-//       }
-//     }
-//     m[0] = n;
-//     target = target + String(m);
-//   }
-//   return target;
-// }
+void count(){
+  songNum++;
+  Serial.println(songNum);
+}

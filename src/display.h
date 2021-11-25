@@ -1,4 +1,4 @@
-// #pragma once
+#pragma once
 
-// void displayInit();
+void displayInit();
 // void updateDisplay();
