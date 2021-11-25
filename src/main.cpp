@@ -173,6 +173,9 @@ piratesSong();
   else if(songNum = 2){
     marioMario();
   }
+  if(songNum > songCount) {
+    songNum = 0;
+  }
 }
 
 void stopMusic(){
